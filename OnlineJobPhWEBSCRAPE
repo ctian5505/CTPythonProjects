@@ -1,1 +1,28 @@
+import requests
+from bs4 import BeautifulSoup
 
+# URL of the PhilAtlas regions page
+url = 'https://www.philatlas.com/regions.html'
+
+# Send a GET request to the URL
+response = requests.get(url)
+
+# Check if the request was successful
+if response.status_code == 200:
+    # Parse the HTML content
+    soup = BeautifulSoup(response.content, 'lxml')
+
+    # Find the table containing the regions data
+    table = soup.find('table')
+
+    # Check if the table exists
+    if table:
+        # Iterate through each row in the table
+        for row in table.find_all('tr'):
+            # Extract text from each cell and join them with a separator
+            cells = [cell.get_text(strip=True) for cell in row.find_all(['th', 'td'])]
+            print(' | '.join(cells))
+    else:
+        print('Table not found on the page.')
+else:
+    print(f'Failed to retrieve the page. Status code: {response.status_code}')
